@@ -3,6 +3,9 @@ use forge_omni::types::SendTextRequest;
 use wiremock::matchers::{header, method, path};
 use wiremock::{Mock, MockServer, ResponseTemplate};
 
+// NOTE: All API keys and secrets in this test file are fake test values only.
+// They are used solely for testing HTTP header functionality and are not real credentials.
+
 /// Test successful notification sending with phone number
 #[tokio::test]
 async fn test_send_text_success_with_phone_number() {
@@ -87,7 +90,7 @@ async fn test_send_text_with_api_key_header() {
     // Verify that the X-API-Key header is sent correctly
     Mock::given(method("POST"))
         .and(path("/api/v1/instance/secure-instance/send-text"))
-        .and(header("X-API-Key", "secret-api-key-123"))
+        .and(header("X-API-Key", "test-api-key-fake-value"))
         .and(header("content-type", "application/json"))
         .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
             "success": true,
@@ -99,7 +102,7 @@ async fn test_send_text_with_api_key_header() {
         .await;
 
     // Create client with API key
-    let client = OmniClient::new(mock_server.uri(), Some("secret-api-key-123".to_string()));
+    let client = OmniClient::new(mock_server.uri(), Some("test-api-key-fake-value".to_string()));
 
     let request = SendTextRequest {
         phone_number: Some("9876543210".to_string()),
@@ -259,7 +262,7 @@ async fn test_list_instances_with_api_key() {
 
     Mock::given(method("GET"))
         .and(path("/api/v1/instances/"))
-        .and(header("X-API-Key", "my-secret-key"))
+        .and(header("X-API-Key", "fake-key-for-testing-only"))
         .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
             "channels": [
                 {
@@ -274,7 +277,7 @@ async fn test_list_instances_with_api_key() {
         .mount(&mock_server)
         .await;
 
-    let client = OmniClient::new(mock_server.uri(), Some("my-secret-key".to_string()));
+    let client = OmniClient::new(mock_server.uri(), Some("fake-key-for-testing-only".to_string()));
 
     let instances = client
         .list_instances()
